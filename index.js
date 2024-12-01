@@ -1,6 +1,7 @@
 import { addBookToMainLibrary } from "./add-book.js";
 import { startCamera } from "./camera.js";
 import { handleFetchBook } from "./fetch-book.js"
+import { getIsbnFromImg } from "./barcode-reader.js"
 
 let currentBook = {}
 
@@ -31,7 +32,7 @@ addBookButton.addEventListener('click', async () => {
         // alert('Book Added')
     } catch (error) {
         alert(`Error while adding book: ${error.message}`);
-    }   
+    }
 })
 
 /* Take snapshot when button is clicked */
