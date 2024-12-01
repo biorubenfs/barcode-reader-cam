@@ -56,5 +56,5 @@ snapshotButton.addEventListener('click', async () => {
     const imgElement = document.getElementById('captured-image');
     imgElement.src = imageDataUrl;
 
-    await getIsbnFromImg(imageDataUrl);
+    await getIsbnFromImg();
 });
