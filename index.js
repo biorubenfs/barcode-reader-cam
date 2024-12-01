@@ -1,72 +1,59 @@
 import { addBookToMainLibrary } from "./add-book.js";
+import { startCamera } from "./camera.js";
 import { handleFetchBook } from "./fetch-book.js"
 
 let currentBook = {}
 
-document.getElementById('fetch-button').addEventListener('click', async () => {
-    const book = await handleFetchBook(document.getElementById('isbn-input'))
-    currentBook = { ...book }
+await startCamera()
+
+const fecthButton = document.getElementById('fetch-button')
+const addBookButton = document.getElementById('add-book-button')
+const snapshotButton = document.getElementById('snapshot-button')
+const successMsg = document.getElementById('success-msg')
+
+/* Event Listeners */
+/* Fetch Book from Open Library */
+fecthButton.addEventListener('click', async () => {
+    try {
+        const book = await handleFetchBook(document.getElementById('isbn-input'))
+        currentBook = { ...book }
+    } catch (error) {
+        alert(`Error while searching in Open Library, ${error.message}`)
+    }
 })
 
-document.getElementById('add-book-button').addEventListener('click', async () => await addBookToMainLibrary(currentBook))
-
-const video = document.getElementById('camera');
-const canvas = document.getElementById('snapshot');
-const captureButton = document.getElementById('capture-btn');
-const ctx = canvas.getContext('2d');
-
-async function startCamera() {
+/* Add book to library */
+addBookButton.addEventListener('click', async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        video.srcObject = stream;
+        await addBookToMainLibrary(currentBook)
+        successMsg.classList.remove("hidden")
+        setTimeout(() => successMsg.classList.add('hidden'), 2000)
+        // alert('Book Added')
     } catch (error) {
-        console.error("Error al acceder a la cámara web:", error);
-        alert("No se pudo acceder a la cámara web.");
-    }
-}
+        alert(`Error while adding book: ${error.message}`);
+    }   
+})
 
 /* Take snapshot when button is clicked */
-captureButton.addEventListener('click', async () => {
-    // Ajustar el tamaño del canvas al tamaño del video
+snapshotButton.addEventListener('click', async () => {
+    /* create canvas */
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const video = document.getElementById('camera');
+
+    /* adjust canvas size */
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    canvas.style.display = "none";
-
-    // Dibujar el frame actual del video en el canvas
+    /* draw the current video frame in canvas */
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convertir el contenido del canvas en un Data URL (imagen en base64)
+    /* convert canvas content into a DataURL (base64 image) */
     const imageDataUrl = canvas.toDataURL('image/png');
 
-    // Mostrar la imagen en una etiqueta<img>
-    const imgElement = document.getElementById('captured-image')
+    /* display the snapshot into a <img> tag */
+    const imgElement = document.getElementById('captured-image');
     imgElement.src = imageDataUrl;
-    // No es necesario mostrarla
-    // imgElement.style.display = "none"
 
-    await getIsbnFromImg()
+    await getIsbnFromImg(imageDataUrl);
 });
-
-async function getIsbnFromImg() {
-    // Crear un lector de códigos QR
-    const codeReader = new ZXing.BrowserBarcodeReader();
-
-    const img = document.getElementById('captured-image');
-    const resultEl = document.getElementById('result');
-    const isbnInput = document.getElementById('isbn-input')
-
-    codeReader.decodeFromImage(img)
-        .then(result => {
-            console.log(result);
-            resultEl.textContent = result.text;
-            isbnInput.value = result.text
-        })
-        .catch(err => {
-            console.error(err);
-            resultEl.textContent = err;
-        });
-}
-
-
-startCamera()

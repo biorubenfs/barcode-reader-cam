@@ -1,14 +1,12 @@
-function displayData({ title, authors, coverUrl, isbn, plot }) {
+function displayData({ title, authors, coverUrl, isbn }) {
     const isbnTag = document.getElementById('isbn')
     const titleTag = document.getElementById('title')
     const authorsTag = document.getElementById('authors')
-    // const plotTag = document.getElementById('plot')
     const coverTag = document.getElementById('cover')
 
     isbnTag.innerText = isbn
     titleTag.innerText = title
     authorsTag.innerText = authors.join(" - ")
-    // plotTag.innerText = plot
     coverTag.src = coverUrl
     coverTag.alt = "Portada no disponible"
 }
@@ -16,11 +14,11 @@ function displayData({ title, authors, coverUrl, isbn, plot }) {
 async function fetchBookData(isbn) {
     const isbn_url = `https://openlibrary.org/isbn/${isbn}.json`
 
-    const response = await fetch(isbn_url, {method: 'GET'});
+    const response = await fetch(isbn_url, { method: 'GET' });
     if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`)
     }
-    
+
     const data = await response.json()
 
     return data
@@ -53,27 +51,20 @@ async function getBookAuthors(bookFetchResponse) {
 
 export async function handleFetchBook(isbn) {
     if (!isbn.value) {
-        console.error('isbn not provided')
-        return;
+        throw new Error('ISBN not provided')
     }
 
-    try {
-        const formattedIsbn = isbn.value.trim().replaceAll('-', '')
-        const bookData = await fetchBookData(formattedIsbn);
+    const formattedIsbn = isbn.value.trim().replaceAll('-', '')
+    const bookData = await fetchBookData(formattedIsbn);
 
-        const cover = bookData.covers?.[0]
-        const coverUrl = getCoverUrl(cover);
-        
-        const authors = await getBookAuthors(bookData)
+    const cover = bookData.covers?.[0]
+    const coverUrl = getCoverUrl(cover);
 
-        const title = bookData.title
+    const authors = await getBookAuthors(bookData)
 
-        const plot = "lorem ipsun"
+    const title = bookData.title
 
-        displayData({ title, coverUrl, isbn: formattedIsbn, authors, plot });
-        
-        return {title, cover, isbn: formattedIsbn, authors}
-    } catch (error) {
-        console.error('error', error)
-    }
+    displayData({ title, coverUrl, isbn: formattedIsbn, authors });
+
+    return { title, cover, isbn: formattedIsbn, authors }
 }

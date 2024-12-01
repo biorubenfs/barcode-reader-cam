@@ -31,13 +31,17 @@
 
                 <section>
                     <span>Leer ISBN del código de barras</span><br>
-                    <button class="btn btn-secondary mt-2 mb-2" id="capture-btn">Tomar instantánea</button>
+                    <button class="btn btn-secondary mt-2 mb-2" id="snapshot-button">Tomar instantánea</button>
 
                     <video id="camera" autoplay playsinline></video>
-                    <canvas id="snapshot"></canvas>
+                    <canvas class="hidden", id="snapshot"></canvas>
 
-                    <img id="captured-image"/>
-                    <h4 id="result"></h4>
+                    <div class="alert alert-danger hidden" role="alert" id="message-alert">
+                        Cannot extract isbn from image
+                    </div>
+
+                    <img id="captured-image" class="image-size"/>
+                    <!-- <h4 id="result"></h4> -->
                 </section>
             </div>
             <div class="col-sm">
@@ -46,8 +50,8 @@
                     <br>
                     <div class="row">
                         <div class="col-sm">
-
                             <button class="btn btn-secondary" id="add-book-button">Agregar a Biblioteca</button>
+                            <span class="hidden" id="success-msg">¡Añadido! &#x2705;</span>
 
                             <hr>
 
@@ -69,20 +73,6 @@
                                 <h6><strong>ISBN</strong></h6>
                                 <h7 id="isbn"></h7>
                             </div>
-
-
-
-                            <!-- <hr>
-
-                            <div>
-                                <h6><strong>ISBN</strong></h6>
-                                <p id="plot">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nulla reiciendis
-                                    quod
-                                    accusantium nemo sunt fugit consequuntur et id optio. Consequatur voluptas, expedita
-                                    magnam dolorum magni facilis a inventore vitae unde.</p>
-                            </div> -->
-
-
                         </div>
                         <div class="col-sm d-flex justify-content-end">
                             <img src="https://covers.openlibrary.org/b/isbn/9780385533225-M.jpg" alt="sample" id="cover"
